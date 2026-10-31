@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kwoly HAR Temizleyici</title>
+<style>
+:root{--bg:#f3f5f9;--panel:#fff;--ink:#0f172a;--muted:#64748b;--line:#d6dce6;--brand:#2457d6;--ok:#0f9d58;--ok-soft:#e7f6ee;--err:#d93025;--err-soft:#fdecea}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1120;--panel:#131c2e;--ink:#e2e8f0;--muted:#94a3b8;--line:#2a3a58;--brand:#5b8cff;--ok:#34c47c;--ok-soft:#12301f;--err:#ff6b5e;--err-soft:#3a1714;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
+main{max-width:640px;margin:0 auto;padding:40px 16px}
+h1{font-size:22px;margin:0 0 4px}
+p{color:var(--muted);margin:0 0 20px}
+.alan{border:2px dashed var(--line);border-radius:14px;background:var(--panel);padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .15s}
+.alan.ust{border-color:var(--brand)}
+.alan b{display:block;font-size:17px;margin-bottom:4px}
+.alan span{color:var(--muted);font-size:13px}
+input[type=file]{display:none}
+.sonuc{margin-top:20px;padding:16px;border-radius:12px;display:none}
+.sonuc.ok{display:block;background:var(--ok-soft)}
+.sonuc.hata{display:block;background:var(--err-soft);color:var(--err)}
+.sonuc ul{margin:8px 0 0;padding-left:20px}
+a.indir{display:inline-block;margin-top:12px;background:var(--brand);color:#fff;text-decoration:none;padding:10px 16px;border-radius:9px;font-weight:600}
+.not{margin-top:24px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>HAR Temizleyici</h1>
+  <p>Portal kaydındaki şifre, oturum, TC, telefon, plaka ve isim bilgilerini siler. Dosya <b>bilgisayarından çıkmaz</b>, temizlik bu sayfada yapılır.</p>
+
+  <label class="alan" id="alan" for="dosya">
+    <b>HAR dosyasını buraya sürükle</b>
+    <span>veya tıklayıp seç (örnek: anadolu.har)</span>
+  </label>
+  <input type="file" id="dosya" accept=".har,application/json">
+
+  <div class="sonuc" id="sonuc"></div>
+
+  <div class="not">Temizlenmiş dosyayı gönderdikten sonra orijinal <b>.har</b> dosyasını silmeyi unutma. Orijinal dosyada oturum bilgilerin var.</div>
+</main>
+<script>
+const GIZLI_BASLIK=/cookie|authorization|token|session|csrf|xsrf|auth/i;
+const GIZLI_ALAN=/pass|sifre|şifre|parola|user|kullanici|token|otp|sms|kod|code|secret|session|tckn|tcno|kimlik|vkn|telefon|phone|gsm|email|eposta|ad_?soyad|name|adi|soyad|unvan|sahip|sigortali|sigortalı|musteri|müşteri|owner|insured|customer|adres|address|dogum|birth|plaka|plate|sase|sasi|chassis|motor/i;
+const DESENLER=[
+  [/(?<!\d)[1-9]\d{10}(?!\d)/g,"<TC>"],
+  [/(?<!\d)\d{10}(?!\d)/g,"<VKN_VEYA_TEL>"],
+  [/(?<!\d)0?5\d{2}[ -]?\d{3}[ -]?\d{2}[ -]?\d{2}(?!\d)/g,"<TEL>"],
+  [/[\w.+-]+@[\w-]+\.[\w.]+/g,"<EPOSTA>"],
+  [/\b(0[1-9]|[1-7]\d|8[01])\s?[A-ZÇĞİÖŞÜ]{1,3}\s?\d{2,5}\b/g,"<PLAKA>"],
+];
+const metin=s=>DESENLER.reduce((a,[d,y])=>a.replace(d,y),s);
+function nesne(o){
+  if(Array.isArray(o))return o.map(nesne);
+  if(o&&typeof o==="object"){const r={};for(const[k,v]of Object.entries(o))r[k]=GIZLI_ALAN.test(k)&&(v===null||typeof v!=="object")?"<GIZLI>":nesne(v);return r;}
+  return typeof o==="string"?metin(o):o;
+}
+function govde(t){
+  try{return JSON.stringify(nesne(JSON.parse(t)));}
+  catch(e){return metin(t.replace(new RegExp("((?:"+GIZLI_ALAN.source+")[^=&]*=)[^&]*","gi"),"$1<GIZLI>"));}
+}
+function temizle(har){
+  const say={istek:0,baslik:0};
+  for(const e of (har.log&&har.log.entries)||[]){
+    say.istek++;
+    for(const yon of["request","response"]){
+      const r=e[yon]||{};r.cookies=[];
+      const once=(r.headers||[]).length;
+      r.headers=(r.headers||[]).filter(h=>!GIZLI_BASLIK.test(h.name));
+      say.baslik+=once-r.headers.length;
+    }
+    const q=e.request||{};
+    if(q.url&&q.url.includes("?"))q.url=govde(q.url);
+    q.queryString=(q.queryString||[]).map(x=>({name:x.name,value:GIZLI_ALAN.test(x.name)?"<GIZLI>":metin(String(x.value))}));
+    if(q.postData){if(q.postData.text)q.postData.text=govde(q.postData.text);delete q.postData.params;}
+    const c=(e.response||{}).content||{};
+    if(c.text){
+      if(c.encoding==="base64"||!/json|text|xml|html/.test(c.mimeType||"")){c.text="<İKİLİ İÇERİK SİLİNDİ>";delete c.encoding;}
+      else c.text=govde(c.text);
+    }
+  }
+  return say;
+}
+const sonuc=document.getElementById("sonuc");
+function isle(dosya){
+  if(!dosya)return;
+  const fr=new FileReader();
+  fr.onload=()=>{
+    let har;
+    try{har=JSON.parse(fr.result);}catch(e){sonuc.className="sonuc hata";sonuc.textContent="Bu dosya geçerli bir HAR dosyası değil. Chrome'da Network sekmesinden \"Save all as HAR\" ile kaydettiğinden emin ol.";return;}
+    if(!har.log){sonuc.className="sonuc hata";sonuc.textContent="Dosyada HAR kaydı bulunamadı.";return;}
+    const say=temizle(har);
+    const blob=new Blob([JSON.stringify(har,null,1)],{type:"application/json"});
+    const ad=dosya.name.replace(/\.har$/i,"")+".temiz.har";
+    sonuc.className="sonuc ok";
+    sonuc.innerHTML=`<b>Temizlendi ✓</b><ul><li>${say.istek} istek tarandı</li><li>${say.baslik} gizli başlık (çerez, token) silindi</li><li>Şifre, TC, telefon, plaka ve isim alanları maskelendi</li></ul>`;
+    const a=document.createElement("a");a.className="indir";a.href=URL.createObjectURL(blob);a.download=ad;a.textContent="⬇ "+ad+" indir";
+    sonuc.appendChild(a);
+  };
+  fr.readAsText(dosya,"utf-8");
+}
+const alan=document.getElementById("alan");
+document.getElementById("dosya").onchange=e=>isle(e.target.files[0]);
+["dragenter","dragover"].forEach(t=>alan.addEventListener(t,e=>{e.preventDefault();alan.classList.add("ust");}));
+["dragleave","drop"].forEach(t=>alan.addEventListener(t,e=>{e.preventDefault();alan.classList.remove("ust");}));
+alan.addEventListener("drop",e=>isle(e.dataTransfer.files[0]));
+</script>
+</body>
+</html>
