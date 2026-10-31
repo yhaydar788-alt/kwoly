@@ -1,0 +1,54 @@
+{
+  "_aciklama": "adapter: demo | demo_sms | api | robot. on_sorgu_sirasi: araç bilgisini hangi şirketlerden (sırayla) deneyeceğimiz.",
+  "on_sorgu_sirasi": [
+    "DEMO ALFA",
+    "DEMO BETA"
+  ],
+  "sirketler": [
+    {
+      "ad": "DEMO ALFA",
+      "adapter": "demo",
+      "aktif": true
+    },
+    {
+      "ad": "DEMO BETA",
+      "adapter": "demo",
+      "aktif": true
+    },
+    {
+      "ad": "DEMO GAMA",
+      "adapter": "demo",
+      "aktif": true
+    },
+    {
+      "ad": "DEMO DELTA",
+      "adapter": "demo",
+      "aktif": true
+    },
+    {
+      "ad": "DEMO EPSILON",
+      "adapter": "demo",
+      "aktif": true
+    },
+    {
+      "ad": "DEMO ZETA",
+      "adapter": "demo",
+      "aktif": true
+    },
+    {
+      "ad": "DEMO SMS",
+      "adapter": "demo_sms",
+      "aktif": true
+    },
+    {
+      "ad": "ORNEK ROBOT",
+      "adapter": "robot",
+      "aktif": false
+    },
+    {
+      "ad": "ANADOLU",
+      "adapter": "anadolu",
+      "aktif": false
+    }
+  ]
+}

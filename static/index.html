@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kwoly</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 rx=%2210%22 fill=%22%232457d6%22/%3E%3Cpath d=%22M12 10v20M12 21l11-11M16 18l9 12%22 stroke=%22white%22 stroke-width=%224%22 stroke-linecap=%22round%22 fill=%22none%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5f9; --panel:#fff; --ink:#0f172a; --muted:#64748b; --line:#e5e9f0;
+  --brand:#2457d6; --brand-ink:#fff; --brand-soft:#eaf0ff;
+  --ok:#0f9d58; --ok-soft:#e7f6ee; --err:#d93025; --err-soft:#fdecea; --warn:#b26a00; --warn-soft:#fff4e0;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.06);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0b1120; --panel:#131c2e; --ink:#e2e8f0; --muted:#94a3b8; --line:#23304a;
+  --brand:#5b8cff; --brand-soft:#1b2848; --ok:#34c47c; --ok-soft:#12301f; --err:#ff6b5e; --err-soft:#3a1714;
+  --warn:#f0b04a; --warn-soft:#3a2a0f; --shadow:none;}}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+header{display:flex;align-items:center;gap:12px;padding:14px 24px;background:var(--panel);border-bottom:1px solid var(--line)}
+.logo{width:36px;height:36px;flex:none}
+header h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.02em}
+header small{color:var(--muted);display:block;font-size:12px}
+.bos{flex:1}
+.chip{font-size:12px;padding:5px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-weight:500}
+main{display:grid;grid-template-columns:340px 1fr;gap:20px;padding:20px 24px;max-width:1400px;margin:0 auto}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:16px}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.form{padding:20px;align-self:start;position:sticky;top:20px}
+.form h2,.sonuc h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 14px;font-weight:600}
+.sekme{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:16px}
+.sekme button{border:0;background:none;padding:8px;border-radius:7px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}
+.sekme button.aktif{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.alan{margin-bottom:12px}
+.alan label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px}
+.alan input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:var(--panel);color:var(--ink);outline:none;transition:border .15s,box-shadow .15s}
+.alan input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.plaka{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.iki{display:grid;grid-template-columns:90px 1fr;gap:10px}
+.btn{width:100%;padding:11px;border-radius:10px;border:0;font:inherit;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-ana{background:var(--brand);color:var(--brand-ink);margin-top:8px}
+.btn-ana:disabled{opacity:.6;cursor:wait}
+.btn-ikincil{background:var(--brand-soft);color:var(--brand)}
+.arac{margin:12px 0;padding:12px;border-radius:10px;border:1px dashed var(--line);font-size:13px;color:var(--muted);display:none}
+.arac.dolu{display:block;border-style:solid;background:var(--ok-soft);border-color:transparent;color:var(--ink)}
+.arac b{display:block;font-size:14px}
+.sonuc{padding:20px;min-width:0}
+.ozet{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+@media(max-width:700px){.ozet{grid-template-columns:repeat(2,1fr)}}
+.kutu{padding:14px;border-radius:12px;background:var(--bg)}
+.kutu span{font-size:12px;color:var(--muted)}
+.kutu strong{display:block;font-size:20px;margin-top:4px;font-variant-numeric:tabular-nums}
+.kutu.vurgu{background:var(--ok-soft)} .kutu.vurgu strong{color:var(--ok)}
+.ilerleme{height:4px;background:var(--bg);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.ilerleme div{height:100%;width:0;background:var(--brand);transition:width .3s}
+.tablo{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;color:var(--muted);font-weight:500;text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th.s,td.s{text-align:right;font-variant-numeric:tabular-nums}
+tr{transition:background .2s}
+tr.enucuz td{background:var(--ok-soft)}
+tr.enucuz td:first-child{box-shadow:inset 3px 0 0 var(--ok)}
+.sirket{display:flex;align-items:center;gap:10px;font-weight:600}
+.av{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff}
+.rozet{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--bg);color:var(--muted)}
+.durum{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px}
+.durum.OK{background:var(--ok-soft);color:var(--ok)}
+.durum.HATA{background:var(--err-soft);color:var(--err)}
+.durum.ATLANDI{background:var(--warn-soft);color:var(--warn)}
+.durum.BEKLE{background:var(--brand-soft);color:var(--brand)}
+.fiyat{font-weight:700;font-size:15px}
+.fark{font-size:11px;color:var(--muted);display:block}
+.mesaj{font-size:12px;color:var(--err);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.don{width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:d .7s linear infinite}
+@keyframes d{to{transform:rotate(360deg)}}
+.iskelet{display:inline-block;height:12px;width:70px;border-radius:4px;background:linear-gradient(90deg,var(--bg),var(--line),var(--bg));background-size:200%;animation:p 1.2s infinite}
+@keyframes p{to{background-position:-200% 0}}
+.bosdurum{text-align:center;padding:60px 20px;color:var(--muted)}
+.bosdurum div{font-size:40px;margin-bottom:8px}
+.hbtn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 12px;border-radius:9px;font:inherit;font-weight:500;cursor:pointer}
+.hbtn:hover{border-color:var(--brand);color:var(--brand)}
+.baslik{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.baslik h2{margin:0}
+.excel{display:none;text-decoration:none}
+.perde{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;z-index:20}
+.perde.acik{display:block}
+.cekmece{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--panel);z-index:21;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+.cekmece.acik{transform:none}
+.cekmece header{position:static}
+.gliste{overflow:auto;padding:8px 16px}
+.gkayit{padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer}
+.gkayit:hover{border-color:var(--brand)}
+.gkayit b{font-size:15px;letter-spacing:.04em}
+.gkayit small{color:var(--muted);display:block;margin-top:2px}
+.gkayit .f{float:right;color:var(--ok);font-weight:700}
+.kodlar{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:12px;z-index:30;width:min(340px,calc(100% - 40px))}
+.kod{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(15,23,42,.2);animation:gir .2s}
+@keyframes gir{from{transform:translateY(10px);opacity:0}}
+.kod h3{margin:0 0 4px;font-size:14px;display:flex;align-items:center;gap:8px}
+.kod p{margin:0 0 10px;color:var(--muted);font-size:13px}
+.kod .satir{display:flex;gap:8px}
+.kod input{flex:1;min-width:0;padding:10px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:18px;letter-spacing:.3em;text-align:center;background:var(--panel);color:var(--ink)}
+.kod button{border:0;border-radius:9px;padding:0 14px;font:inherit;font-weight:600;cursor:pointer;background:var(--brand);color:#fff}
+.kod .iptal{background:none;color:var(--muted);padding:6px 0 0;font-size:12px}
+.kod .kalan{margin-left:auto;font-size:12px;color:var(--warn);font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <svg class="logo" viewBox="0 0 40 40" aria-label="Kwoly"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2457d6"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#g)"/><path d="M12 10v20M12 21l11-11M16 18l9 12" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M29 9l-3 6h4l-4 7" stroke="#facc15" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+  <div><h1>Kwoly</h1><small>Tüm sigorta şirketlerinden tek tıkla teklif</small></div>
+  <div class="bos"></div>
+  <button class="hbtn" id="gecmisBtn">🕘 Geçmiş</button>
+  <span class="chip" id="sirketSayisi">— şirket</span>
+</header>
+
+<main>
+  <section class="panel form">
+    <h2>Yeni Sorgu</h2>
+    <div class="sekme" id="brans">
+      <button class="aktif" data-v="TRAFIK">Trafik</button>
+      <button data-v="KASKO">Kasko</button>
+    </div>
+    <div class="alan"><label>Plaka</label><input id="plaka" class="plaka" placeholder="06 ABC 123"></div>
+    <div class="alan"><label>TC Kimlik / Vergi No</label><input id="tc_vkn" inputmode="numeric" maxlength="11" placeholder="11 haneli TC veya 10 haneli VKN"></div>
+    <div class="alan"><label>Ruhsat Belge Seri / No</label>
+      <div class="iki"><input id="belge_seri" placeholder="AB"><input id="belge_no" placeholder="123456"></div></div>
+    <button class="btn btn-ikincil" id="onSorguBtn">Araç bilgisini getir</button>
+    <div class="arac" id="arac"></div>
+    <div class="alan"><label>Doğum Tarihi</label><input id="dogum_tarihi" placeholder="GG.AA.YYYY"></div>
+    <div class="alan"><label>Telefon</label><input id="telefon" inputmode="tel" placeholder="5xx xxx xx xx"></div>
+    <button class="btn btn-ana" id="sorguBtn">Teklifleri Al</button>
+  </section>
+
+  <section class="panel sonuc">
+    <div class="baslik"><h2 id="tBaslik">Teklifler</h2><a class="hbtn excel" id="excel" href="#">⬇ Excel</a></div>
+    <div class="ozet">
+      <div class="kutu vurgu"><span>En uygun teklif</span><strong id="oEnUcuz">—</strong></div>
+      <div class="kutu"><span>Ortalama</span><strong id="oOrt">—</strong></div>
+      <div class="kutu"><span>Fark (en yüksek − en düşük)</span><strong id="oFark">—</strong></div>
+      <div class="kutu"><span>Gelen / Toplam</span><strong id="oSay">—</strong></div>
+    </div>
+    <div class="ilerleme"><div id="bar"></div></div>
+    <div class="tablo">
+      <table>
+        <thead><tr><th>Şirket</th><th>Yöntem</th><th>Durum</th><th class="s">Brüt Prim</th><th class="s">Komisyon</th><th>Teklif No</th><th class="s">Süre</th></tr></thead>
+        <tbody id="satirlar"><tr><td colspan="7"><div class="bosdurum"><div>📋</div>Bilgileri girip <b>Teklifleri Al</b>'a basın.</div></td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div class="perde" id="perde"></div>
+<aside class="cekmece" id="cekmece">
+  <header><h1 style="font-size:16px">Sorgu Geçmişi</h1><div class="bos"></div><button class="hbtn" id="kapat">✕</button></header>
+  <div class="gliste" id="gliste"></div>
+</aside>
+<div class="kodlar" id="kodlar"></div>
+<script>
+const $=id=>document.getElementById(id);
+let brans="TRAFIK", sirketler=[], sonuclar={}, arac={}, sorguId=null;
+const renkler=["#2457d6","#7c3aed","#0f9d58","#d97706","#db2777","#0891b2","#4f46e5","#65a30d","#dc2626","#0d9488"];
+const renk=ad=>renkler[[...ad].reduce((a,c)=>a+c.charCodeAt(0),0)%renkler.length];
+const kisalt=ad=>ad.replace(/^DEMO\s*/,"").slice(0,2).toUpperCase();
+const tl=n=>n==null?"—":n.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
+
+document.querySelectorAll("#brans button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#brans button").forEach(x=>x.classList.remove("aktif"));
+  b.classList.add("aktif"); brans=b.dataset.v;
+});
+const govde=()=>({brans,...Object.fromEntries(["plaka","tc_vkn","belge_seri","belge_no","dogum_tarihi","telefon"].map(a=>[a,$(a).value.replace(/\s/g,"").trim()]))});
+const post=(u)=>fetch(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(govde())}).then(r=>r.json());
+
+fetch("/api/sirketler").then(r=>r.json()).then(s=>{sirketler=s;$("sirketSayisi").textContent=s.length+" şirket bağlı";});
+
+$("onSorguBtn").onclick=async()=>{
+  const a=$("arac"); a.className="arac"; a.style.display="block"; a.innerHTML='<span class="iskelet"></span>';
+  const v=await post("/api/on-sorgu");
+  if(v.kaynak){arac=v;a.className="arac dolu";a.innerHTML=`<b>${v.marka} ${v.model}</b>${v.model_yili} · ${v.kullanim_tarzi}<br><small>Kaynak: ${v.kaynak}</small>`;}
+  else a.textContent="Araç bilgisi bulunamadı.";
+};
+
+function ciz(){
+  const liste=sirketler.map(s=>sonuclar[s.ad]||{sirket:s.ad,yontem:s.yontem,durum:"BEKLE"});
+  liste.sort((a,b)=>{const r=x=>x.durum==="OK"?0:x.durum==="BEKLE"?1:2;return r(a)-r(b)||(a.fiyat??0)-(b.fiyat??0);});
+  const ok=liste.filter(x=>x.durum==="OK"), min=ok[0]?.fiyat;
+  $("satirlar").innerHTML=liste.map((x,i)=>{
+    const bekle=x.durum==="BEKLE", enucuz=x.durum==="OK"&&x.fiyat===min;
+    const durumMetin={OK:"Teklif alındı",HATA:"Hata",ATLANDI:"Atlandı",BEKLE:"Sorgulanıyor"}[x.durum];
+    return `<tr class="${enucuz?"enucuz":""}">
+      <td><div class="sirket"><div class="av" style="background:${renk(x.sirket)}">${kisalt(x.sirket)}</div>${x.sirket}</div></td>
+      <td><span class="rozet">${x.yontem}</span></td>
+      <td><span class="durum ${x.durum}">${bekle?'<span class="don"></span>':""}${durumMetin}</span>${x.mesaj?`<div class="mesaj" title="${x.mesaj}">${x.mesaj}</div>`:""}</td>
+      <td class="s">${bekle?'<span class="iskelet"></span>':x.fiyat!=null?`<span class="fiyat">${tl(x.fiyat)}</span>${!enucuz?`<span class="fark">+${tl(x.fiyat-min)}</span>`:'<span class="fark">en uygun</span>'}`:"—"}</td>
+      <td class="s">${bekle?'<span class="iskelet"></span>':tl(x.komisyon)}</td>
+      <td>${x.teklif_no||"—"}</td>
+      <td class="s">${bekle?"":x.sure_sn+" sn"}</td></tr>`;
+  }).join("");
+  const gelen=Object.keys(sonuclar).length;
+  $("bar").style.width=(gelen/sirketler.length*100)+"%";
+  $("oSay").textContent=`${gelen} / ${sirketler.length}`;
+  $("oEnUcuz").textContent=ok.length?tl(min):"—";
+  $("oOrt").textContent=ok.length?tl(ok.reduce((a,x)=>a+x.fiyat,0)/ok.length):"—";
+  $("oFark").textContent=ok.length>1?tl(ok[ok.length-1].fiyat-min):"—";
+}
+
+$("sorguBtn").onclick=async()=>{
+  if(!$("plaka").value.trim()||!$("tc_vkn").value.trim()){alert("Plaka ve TC/VKN zorunlu.");return;}
+  const btn=$("sorguBtn"); btn.disabled=true; btn.innerHTML='<span class="don"></span> Sorgulanıyor…';
+  sonuclar={}; ciz(); $("excel").style.display="none"; $("tBaslik").textContent="Teklifler";
+  const g=govde();
+  sorguId=(await fetch("/api/sorgu",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({brans:g.brans,plaka:g.plaka,tc_vkn:g.tc_vkn,arac})}).then(r=>r.json())).sorgu_id;
+  await Promise.all(sirketler.map(s=>post("/api/teklif/"+encodeURIComponent(s.ad)+"?sorgu_id="+sorguId)
+    .then(r=>{sonuclar[s.ad]=r;ciz();})
+    .catch(e=>{sonuclar[s.ad]={sirket:s.ad,yontem:s.yontem,durum:"HATA",mesaj:String(e)};ciz();})));
+  btn.disabled=false; btn.textContent="Teklifleri Al";
+  $("excel").href="/api/gecmis/"+sorguId+"/excel"; $("excel").style.display="inline-block";
+};
+
+// ---- SMS kodu: bekleyen istekleri yokla, kart göster ----
+const acikKod=new Set();
+async function kodYokla(){
+  let liste=[]; try{liste=await fetch("/api/kod").then(r=>r.json());}catch(e){}
+  const idler=new Set(liste.map(k=>k.id));
+  document.querySelectorAll(".kod").forEach(el=>{if(!idler.has(+el.dataset.id)){el.remove();acikKod.delete(+el.dataset.id);}});
+  liste.forEach(k=>{
+    const kalan=Math.max(0,Math.round(k.bitis-Date.now()/1000));
+    if(acikKod.has(k.id)){const el=document.querySelector(`.kod[data-id="${k.id}"] .kalan`);if(el)el.textContent=kalan+" sn";return;}
+    acikKod.add(k.id);
+    const el=document.createElement("div");el.className="kod";el.dataset.id=k.id;
+    el.innerHTML=`<h3>📱 ${k.sirket}<span class="kalan">${kalan} sn</span></h3><p>${k.mesaj}</p>
+      <div class="satir"><input inputmode="numeric" maxlength="8" placeholder="••••••"><button>Gönder</button></div>
+      <button class="iptal">İptal et</button>`;
+    const inp=el.querySelector("input"), gonder=async()=>{
+      if(!inp.value.trim())return;
+      await fetch("/api/kod/"+k.id,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({kod:inp.value})});
+      el.remove();acikKod.delete(k.id);};
+    el.querySelector(".satir button").onclick=gonder;
+    inp.onkeydown=e=>{if(e.key==="Enter")gonder();};
+    el.querySelector(".iptal").onclick=async()=>{await fetch("/api/kod/"+k.id,{method:"DELETE"});el.remove();acikKod.delete(k.id);};
+    $("kodlar").appendChild(el); inp.focus();
+  });
+}
+setInterval(kodYokla,1500);
+
+// ---- Geçmiş ----
+const cekmece=(ac)=>{$("cekmece").classList.toggle("acik",ac);$("perde").classList.toggle("acik",ac);};
+$("kapat").onclick=$("perde").onclick=()=>cekmece(false);
+$("gecmisBtn").onclick=async()=>{
+  cekmece(true);
+  const l=await fetch("/api/gecmis").then(r=>r.json());
+  $("gliste").innerHTML=l.length?l.map(x=>`<div class="gkayit" data-id="${x.id}">
+     <span class="f">${x.en_ucuz!=null?tl(x.en_ucuz):""}</span><b>${x.plaka}</b>
+     <small>${x.brans} · ${x.zaman.replace("T"," ")} · ${x.basarili||0}/${x.toplam||0} teklif</small></div>`).join("")
+     :'<div class="bosdurum"><div>🕘</div>Henüz sorgu yok.</div>';
+  document.querySelectorAll(".gkayit").forEach(el=>el.onclick=()=>gecmisGoster(+el.dataset.id));
+};
+async function gecmisGoster(id){
+  const d=await fetch("/api/gecmis/"+id).then(r=>r.json());
+  sonuclar={}; d.sonuclar.forEach(x=>sonuclar[x.sirket]=x);
+  const adlar=new Set(sirketler.map(s=>s.ad));
+  d.sonuclar.forEach(x=>{if(!adlar.has(x.sirket))sirketler.push({ad:x.sirket,yontem:x.yontem});});
+  sirketler=sirketler.filter(s=>sonuclar[s.ad]);
+  ciz(); cekmece(false);
+  $("tBaslik").textContent=`Teklifler · ${d.plaka} · ${d.zaman.replace("T"," ")}`;
+  $("excel").href="/api/gecmis/"+id+"/excel"; $("excel").style.display="inline-block";
+  fetch("/api/sirketler").then(r=>r.json()).then(s=>sirketler=s);   // yeni sorgu için listeyi geri yükle
+}
+</script>
+</body>
+</html>
